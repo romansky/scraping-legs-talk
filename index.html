@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Title</title>
+    <title>Common scraping challenges & my scraping library "Legs"</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style type="text/css">
       @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
@@ -13,27 +13,176 @@
         font-family: 'Yanone Kaffeesatz';
         font-weight: normal;
       }
+
+      .zubi h1 {
+        text-shadow: 0 -1px 0 #ff1810;
+        color: #fff;
+        background-color: #4BAD08;
+        padding: 10px;
+        -moz-border-radius:    15px;
+        -webkit-border-radius: 15px;
+        border-radius:         15px;
+      }
+
+      .legs {
+        background-color: #4BAD08;
+        -moz-border-radius:    0.1em;
+        -webkit-border-radius: 0.1em;
+        border-radius:         0.1em;
+        padding: 0.1em;
+      }
+
+      .left {
+        float: left;
+        clear: left;
+      }
+
+      code.remark-inline-code {
+        background-color: lightgray;
+        -moz-border-radius:    0.1em;
+        -webkit-border-radius: 0.1em;
+        border-radius:         0.1em;
+        padding: 0.1em;
+      }
+
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
     </style>
   </head>
   <body>
-    <textarea id="source">
+    <textarea id="source" style="display:none">
 
-class: center, middle
+class: center, middle, zubi
 
-# Title
+# Common scraping challenges & my scraping library "Legs"
 
----
+### .left[Roman Landenband]
 
-# Agenda
-
-1. Introduction
-2. Deep-dive
-3. ...
+.left[slides [http://romansky.github.io/scraping-legs-talk](http://romansky.github.io/scraping-legs-talk)]
+.left[.legs[Legs] repo [https://github.com/uniformlyrandom/legs](https://github.com/uniformlyrandom/legs)]
 
 ---
 
-# Introduction
+# Why people scrape stuff?
+
+ * no public API - target has no motivation/interest in writing API service layer
+ * API is partial - there's more then meets the API
+
+Scraping is mostly the process of turning "unstructured data" into "structured data" (HTML -> CSV)
+
+---
+
+# Tool-belt
+
+
+`XPath`
+
+```html
+<div>
+  <title>zTitle</title>
+  <div class="content">
+    <div class="item">
+      <span class="name">item1</span><span class="price">price1</span>
+    </div>
+    <div class="item">
+      <span class="name">item2</span><span class="price">price2</span>
+    </div>
+  </div>
+</div>
+
+//title/text() == "zTitle"
+(//div[@class="item"])[2]/span[@class="name"]/text() == "item2"
+```
+ 
+`regex`
+
+```html
+<a href="http://site.com/zubi?dubi=true">a link</a>
+
+replace(/^.+href="([^"]+)".+$/,"$1") = http://site.com/zubi?dubi=true
+```
+ 
+
+---
+
+# Other tools 
+
+ * queues (jobs)
+ * Selenium 
+ * PhantomJS
+
+---
+
+# Why I wrote .legs[Legs]
+
+ * had many small scraping projects, had "need" to over engineer
+ * a very useful tool to master
+ * has legitimate usages
+ * its a recurring solution to recurring problem
+
+---
+
+# .legs[Legs] trivia
+
+ * refined APIs and idea over years of iterations with small projects
+ * originally written in `JavaScript` on top of `Node.js`
+ * had issues with formatting of non `UTF8` sites
+ * re-written to `Scala`
+ * open-sourced `Jul-2014`
+
+---
+
+# Components
+
+Core- portable, declarative, `DSL` inside `Json` structures
+
+```javascript
+[
+    {
+        "action" : "FETCH/url",
+        "values" : {
+            "url" : "https://news.google.com/"
+        },
+        "yields" : "s_google_news"
+    },{
+        "action" : "ECHO/s_google_news"
+    }
+]
+```
+
+Rich library of helpers
+
+ * `selenium` with `Phantom.js`
+ * various `string` manipulation
+ * can write custom add-hoc code using `Nashorn` (`JavaScript`)
+
+Jobs / orchestration
+
+ * `FIFO` job queue
+ * schedule a job
+ * workers to poll queues for job
+ * retry on fail, after 3 failures, defer
+
+---
+
+# Scraping `Seret.co.il`
+
+ * Let's scrape (www.seret.co.il)[www.seret.co.il]
+ * Example (code)[https://github.com/uniformlyrandom/legs/tree/master/examples/seretcoil]
+ * `Firebug`, `$x("..")` (works on Chrome too)
+
+---
+
+# Closing
+
+ * extending .legs[Legs]
+ * future plans: UI- scraping, monitoring; repository of "receipts"
+
+---
+
+class: center, middle, zubi
+
+# Questions?
+
 
     </textarea>
     <script src="http://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript">
